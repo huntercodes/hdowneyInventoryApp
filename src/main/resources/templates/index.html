@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: head}"></head>
+<body>
+<h2>Welcome to the MCC Bookstore</h2>
+<p>Browse our collection of books, school materials, and accessories.</p>
+<a href="/register">
+    <button>Add New Item</button>
+</a>
+<a href="/items">
+    <button>View Inventory</button>
+</a>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

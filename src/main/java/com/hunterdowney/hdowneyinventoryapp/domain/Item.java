@@ -1,18 +1,28 @@
 package com.hunterdowney.hdowneyinventoryapp.domain;
 
+import jakarta.validation.constraints.*;
 import java.util.UUID;
 
 public class Item {
     private String id;
+
+    @NotBlank(message = "Name is required")
     private String name;
+
+    @NotBlank(message = "Manufacturer is required")
     private String manufacturer;
+
+    @Positive(message = "Price must be greater than zero")
     private double price;
+
+    @Min(value = 0, message = "Inventory cannot be negative")
     private int inventory;
+
     private ItemType itemType;
     private Image image;
 
     public Item() {
-        this.id = UUID.randomUUID().toString(); // Generate unique ID
+        this.id = java.util.UUID.randomUUID().toString();
     }
 
     public Item(String name, String manufacturer, double price, int inventory, ItemType itemType, Image image) {
