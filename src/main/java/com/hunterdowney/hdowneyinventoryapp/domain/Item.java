@@ -37,6 +37,7 @@ public class Item {
 
     // getters + setters
     public String getId() { return id; }
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
@@ -50,7 +51,13 @@ public class Item {
     public void setInventory(int inventory) { this.inventory = inventory; }
 
     public ItemType getItemType() { return itemType; }
-    public void setItemType(ItemType itemType) { this.itemType = itemType; }
+    public void setItemType(String itemType) {
+        try {
+            this.itemType = ItemType.valueOf(itemType.replace(" & ", "_").toUpperCase());
+        } catch (IllegalArgumentException e) {
+            this.itemType = null;
+        }
+    }
 
     public Image getImage() { return image; }
     public void setImage(Image image) { this.image = image; }

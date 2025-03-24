@@ -3,6 +3,8 @@
 <head th:replace="~{fragments/header :: head}"></head>
 <body>
 <h2>Inventory List</h2>
+<p>Total Items in Inventory: <span th:text="${items.size()}"></span></p>
+
 <table border="1">
     <tr>
         <th>Name</th>
@@ -12,7 +14,7 @@
         <th>Action</th>
     </tr>
     <tr th:each="item : ${items}">
-        <td th:text="${item.name}"></td>
+        <td><a th:href="@{/items/{id}(id=${item.id})}" th:text="${item.name}"></a></td>
         <td th:text="${item.manufacturer}"></td>
         <td th:text="${item.price}"></td>
         <td th:text="${item.itemType}"></td>

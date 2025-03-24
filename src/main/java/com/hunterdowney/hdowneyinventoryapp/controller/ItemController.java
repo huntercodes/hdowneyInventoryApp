@@ -41,6 +41,7 @@ public class ItemController {
         if (result.hasErrors()) {
             return "register";
         }
+
         if (!imageFile.isEmpty()) {
             try {
                 item.setImage(new Image(imageFile.getOriginalFilename(), imageFile.getBytes()));
@@ -48,6 +49,7 @@ public class ItemController {
                 e.printStackTrace();
             }
         }
+
         itemDB.addItem(item);
         return "redirect:/items";
     }

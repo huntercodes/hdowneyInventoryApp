@@ -26,7 +26,7 @@
 
     <label>Item Type:
         <select th:field="*{itemType}">
-            <option th:each="type : ${itemTypes}" th:value="${type}" th:text="${type}"></option>
+            <option th:each="type : ${itemTypes}" th:value="${type.name()}" th:text="${type}"></option>
         </select>
     </label><br>
 

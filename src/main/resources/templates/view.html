@@ -2,16 +2,20 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/header :: head}"></head>
 <body>
-    <h2>Item Details</h2>
-    <p><strong>Name:</strong> <span th:text="${item.name}"></span></p>
-    <p><strong>Manufacturer:</strong> <span th:text="${item.manufacturer}"></span></p>
-    <p><strong>Price:</strong> $<span th:text="${item.price}"></span></p>
-    <p><strong>Inventory:</strong> <span th:text="${item.inventory}"></span></p>
-    <p><strong>Type:</strong> <span th:text="${item.itemType}"></span></p>
-    <p><strong>Image:</strong></p>
-    <img th:if="${item.image != null}" th:src="'data:image/png;base64,' + ${item.image.base64Image}" width="150"/>
-    <p th:if="${item.image == null}">No image available</p>
-    <a href="/items">Back to List</a>
-    <footer th:replace="~{fragments/footer :: footer}"></footer>
+<h2>Item Details</h2>
+<p><strong>Name:</strong> <span th:text="${item.name}"></span></p>
+<p><strong>Manufacturer:</strong> <span th:text="${item.manufacturer}"></span></p>
+<p><strong>Price:</strong> $<span th:text="${item.price}"></span></p>
+<p><strong>Inventory:</strong> <span th:text="${item.inventory}"></span></p>
+<p><strong>Type:</strong> <span th:text="${item.itemType}"></span></p>
+
+<p><strong>Image:</strong></p>
+<img th:if="${item.image != null}" th:src="'data:image/png;base64,' + ${item.image.base64Image}" width="150"/>
+<p th:if="${item.image == null}">No image available</p>
+
+<br>
+<a href="/items">Back to Inventory</a>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>
