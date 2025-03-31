@@ -11,10 +11,7 @@ import com.hunterdowney.hdowneyinventoryapp.domain.ItemType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -57,9 +54,21 @@ public class ItemController {
     }
 
     @GetMapping("/items")
-    public String listItems(Model model) {
+    public String listItems(@RequestParam(required = false) String search,
+                            @RequestParam(required = false) ItemType filter,
+                            Model model) {
+        Iterable<Item> items;
+        if (search != null && !search.isEmpty()) {
+            items = itemRepo.findByNameContainingIgnoreCaseOrManufacturerContainingIgnoreCase(search, search);
+        } else if (filter != null) {
+            items = itemRepo.findByItemType(filter);
+        } else {
+            items = itemRepo.findAll();
+        }
+
         model.addAttribute("siteTitle", "Inventory List");
-        model.addAttribute("items", itemRepo.findAll());
+        model.addAttribute("itemTypes", ItemType.values());
+        model.addAttribute("items", items);
         return "list";
     }
 
@@ -72,6 +81,45 @@ public class ItemController {
         model.addAttribute("siteTitle", "Item Details");
         model.addAttribute("item", item.get());
         return "view";
+    }
+
+    @GetMapping("/items/edit/{id}")
+    public String showEditForm(@PathVariable String id, Model model) {
+        Optional<Item> itemOptional = itemRepo.findById(id);
+        if (itemOptional.isPresent()) {
+            model.addAttribute("item", itemOptional.get());
+            model.addAttribute("itemTypes", ItemType.values());
+            return "edit";
+        } else {
+            return "redirect:/items";
+        }
+    }
+
+    @PostMapping("/items/edit/{id}")
+    public String updateItem(@PathVariable String id, @Valid @ModelAttribute Item item,
+                             BindingResult result, @RequestParam("imageFile") MultipartFile imageFile) {
+        if (result.hasErrors()) return "edit";
+
+        item.setId(id);
+
+        if (!imageFile.isEmpty()) {
+            try {
+                item.setImage(new Image(imageFile.getOriginalFilename(), imageFile.getBytes()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            itemRepo.findById(id).ifPresent(existing -> item.setImage(existing.getImage()));
+        }
+
+        itemRepo.save(item);
+        return "redirect:/items";
+    }
+
+    @GetMapping("/items/delete/{id}")
+    public String deleteItem(@PathVariable String id) {
+        itemRepo.deleteById(id);
+        return "redirect:/items";
     }
 
 }

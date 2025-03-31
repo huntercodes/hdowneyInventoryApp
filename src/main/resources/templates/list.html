@@ -3,6 +3,18 @@
 <head th:replace="~{fragments/header :: head}"></head>
 <body>
 <h2>Inventory List</h2>
+
+<form method="get" th:action="@{/items}">
+    <input type="text" name="search" placeholder="Search by name or manufacturer" />
+    <select name="filter">
+        <option value="">All Types</option>
+        <option th:each="type : ${itemTypes}"
+                th:value="${type.name()}"
+                th:text="${type.toString()}"></option>
+    </select>
+    <button type="submit">Search</button>
+</form>
+
 <p>Total Items in Inventory: <span th:text="${items.size()}"></span></p>
 
 <table border="1">
@@ -19,6 +31,8 @@
         <td th:text="${item.price}"></td>
         <td th:text="${item.itemType}"></td>
         <td><a th:href="@{/items/{id}(id=${item.id})}">View</a></td>
+        <td><a th:href="@{'/items/edit/' + ${item.id}}">Modify</a></td>
+        <td><a th:href="@{'/items/delete/' + ${item.id}}">Delete</a></td>
     </tr>
 </table>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
