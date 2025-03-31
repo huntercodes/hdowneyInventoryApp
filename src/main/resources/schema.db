@@ -1,7 +1,7 @@
 CREATE TABLE image (
     id UUID PRIMARY KEY,
-    name VARCHAR(255),
-    content BLOB
+    image_name VARCHAR(255),
+    image_data BLOB
 );
 
 CREATE TABLE item (

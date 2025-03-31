@@ -1,5 +1,6 @@
 package com.hunterdowney.hdowneyinventoryapp.controller;
 
+import com.hunterdowney.hdowneyinventoryapp.repository.ItemRepository;
 import jakarta.validation.Valid;
 import org.springframework.validation.BindingResult;
 
@@ -17,15 +18,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Controller
 public class ItemController {
 
-    private final ItemDB itemDB;
+    private final ItemRepository itemRepo;
 
     @Autowired
-    public ItemController(ItemDB itemDB) {
-        this.itemDB = itemDB;
+    public ItemController(ItemRepository itemRepo) {
+        this.itemRepo = itemRepo;
     }
 
     @GetMapping("/register")
@@ -50,25 +52,25 @@ public class ItemController {
             }
         }
 
-        itemDB.addItem(item);
+        itemRepo.save(item);
         return "redirect:/items";
     }
 
     @GetMapping("/items")
     public String listItems(Model model) {
         model.addAttribute("siteTitle", "Inventory List");
-        model.addAttribute("items", itemDB.getAllItems().values());
+        model.addAttribute("items", itemRepo.findAll());
         return "list";
     }
 
     @GetMapping("/items/{id}")
     public String viewItem(@PathVariable String id, Model model) {
-        Item item = itemDB.getItemById(id);
-        if (item == null) {
+        Optional<Item> item = itemRepo.findById(id);
+        if (item.isEmpty()) {
             return "redirect:/items";
         }
         model.addAttribute("siteTitle", "Item Details");
-        model.addAttribute("item", item);
+        model.addAttribute("item", item.get());
         return "view";
     }
 
