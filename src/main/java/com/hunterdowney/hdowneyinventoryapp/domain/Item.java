@@ -1,9 +1,12 @@
 package com.hunterdowney.hdowneyinventoryapp.domain;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.util.UUID;
 
+@Entity
 public class Item {
+    @Id
     private String id;
 
     @NotBlank(message = "Name is required")
@@ -18,7 +21,11 @@ public class Item {
     @Min(value = 0, message = "Inventory cannot be negative")
     private int inventory;
 
+    @Enumerated(EnumType.STRING)
     private ItemType itemType;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
 
     public Item() {
@@ -37,6 +44,7 @@ public class Item {
 
     // getters + setters
     public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }

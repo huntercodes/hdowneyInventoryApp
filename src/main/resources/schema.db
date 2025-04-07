@@ -1,0 +1,16 @@
+CREATE TABLE image (
+    id UUID PRIMARY KEY,
+    image_name VARCHAR(255),
+    image_data BLOB
+);
+
+CREATE TABLE item (
+    id UUID PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    manufacturer VARCHAR(255) NOT NULL,
+    price DOUBLE PRECISION NOT NULL,
+    inventory INT NOT NULL,
+    item_type VARCHAR(50),
+    image_id UUID,
+    FOREIGN KEY (image_id) REFERENCES image(id)
+);

@@ -2,8 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/header :: head}"></head>
 <body>
-<h2>Add New Item</h2>
-<form th:action="@{/register}" th:object="${item}" method="post" enctype="multipart/form-data">
+<h2>Edit Item</h2>
+<form th:action="@{'/items/edit/' + ${item.id}}" th:object="${item}" method="post" enctype="multipart/form-data">
     <label>Name:
         <input type="text" th:field="*{name}" required/>
         <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red;"></span>
@@ -25,10 +25,11 @@
     </label><br>
 
     <label>Item Type:
-        <select th:field="*{itemType}">
+        <select name="itemType">
             <option th:each="type : ${itemTypes}"
                     th:value="${type.name()}"
-                    th:text="${type.toString()}"></option>
+                    th:text="${type.toString()}"
+                    th:selected="${type.name() == item.itemType.name()}"></option>
         </select>
     </label><br>
 
