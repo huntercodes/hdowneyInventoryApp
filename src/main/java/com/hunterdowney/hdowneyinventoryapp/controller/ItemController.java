@@ -13,7 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -27,6 +27,7 @@ public class ItemController {
         this.itemRepo = itemRepo;
     }
 
+    @PreAuthorize("hasAnyRole('MNGR', 'ADMIN')")
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("siteTitle", "Register Item");
@@ -35,6 +36,7 @@ public class ItemController {
         return "register";
     }
 
+    @PreAuthorize("hasAnyRole('MNGR', 'ADMIN')")
     @PostMapping("/register")
     public String processRegistration(@Valid @ModelAttribute Item item, BindingResult result, MultipartFile imageFile) {
         if (result.hasErrors()) {
@@ -83,6 +85,7 @@ public class ItemController {
         return "view";
     }
 
+    @PreAuthorize("hasAnyRole('ASSOC', 'MNGR', 'ADMIN')")
     @GetMapping("/items/edit/{id}")
     public String showEditForm(@PathVariable String id, Model model) {
         Optional<Item> itemOptional = itemRepo.findById(id);
@@ -95,6 +98,7 @@ public class ItemController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ASSOC', 'MNGR', 'ADMIN')")
     @PostMapping("/items/edit/{id}")
     public String updateItem(@PathVariable String id, @Valid @ModelAttribute Item item,
                              BindingResult result, @RequestParam("imageFile") MultipartFile imageFile) {
@@ -116,6 +120,7 @@ public class ItemController {
         return "redirect:/items";
     }
 
+    @PreAuthorize("hasAnyRole('MNGR', 'ADMIN')")
     @GetMapping("/items/delete/{id}")
     public String deleteItem(@PathVariable String id) {
         itemRepo.deleteById(id);

@@ -17,9 +17,15 @@ public class LoginController {
 
     @GetMapping("/")
     public String home(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        if (userDetails != null && userDetails instanceof User user) {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+
+        if (userDetails instanceof User user) {
             model.addAttribute("name", user.getFullName());
         }
+
         return "index";
     }
+
 }
