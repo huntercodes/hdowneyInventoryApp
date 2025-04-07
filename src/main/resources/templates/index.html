@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/header :: head}"></head>
 <body>
+<p th:if="${name != null}" th:text="'Welcome, ' + ${name} + '!'"></p>
+<p sec:authorize="!isAuthenticated()">
+    <a th:href="@{/login}">Login</a>
+</p>
+<p sec:authorize="isAuthenticated()">
+    <form th:action="@{/logout}" method="post" style="display:inline;">
+        <button type="submit">Logout</button>
+    </form>
+</p>
 <h2>Welcome to the MCC Bookstore</h2>
 <p>Browse our collection of books, school materials, and accessories.</p>
-<a href="/register">
+<a href="/register" sec:authorize="hasAnyRole('MNGR','ADMIN')">
     <button>Add New Item</button>
 </a>
 <a href="/items">
