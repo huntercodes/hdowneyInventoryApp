@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: head}"></head>
 <body>
+<div th:replace="~{fragments/header :: navbar}"></div>
 <h2>Add New Item</h2>
 <form th:action="@{/register}" th:object="${item}" method="post" enctype="multipart/form-data">
     <label>Name:

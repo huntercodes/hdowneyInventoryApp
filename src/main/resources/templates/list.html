@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: head}"></head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
+
 <h2>Inventory List</h2>
+<div th:replace="~{fragments/header :: navbar}"></div>
 
 <form method="get" th:action="@{/items}">
     <input type="text" name="search" placeholder="Search by name or manufacturer" />
@@ -31,8 +32,13 @@
         <td th:text="${item.price}"></td>
         <td th:text="${item.itemType}"></td>
         <td><a th:href="@{/items/{id}(id=${item.id})}">View</a></td>
-        <td><a th:href="@{'/items/edit/' + ${item.id}}">Modify</a></td>
-        <td><a th:href="@{'/items/delete/' + ${item.id}}">Delete</a></td>
+        <td sec:authorize="hasAnyRole('ASSOC','MNGR','ADMIN')">
+            <a th:href="@{'/items/edit/' + ${item.id}}">Modify</a>
+        </td>
+
+        <td sec:authorize="hasAnyRole('MNGR','ADMIN')">
+            <a th:href="@{'/items/delete/' + ${item.id}}">Delete</a>
+        </td>
     </tr>
 </table>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
