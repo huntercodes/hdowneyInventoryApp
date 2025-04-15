@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="~{fragments/header :: head}"></head>
 <body>
+<div th:replace="~{fragments/header :: navbar}"></div>
 <h2>Item Details</h2>
 
 <p><strong>Name:</strong> <span th:text="${item.name}"></span></p>

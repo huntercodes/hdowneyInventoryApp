@@ -1,39 +1,42 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: head}"></head>
 <body>
+<div th:replace="~{fragments/header :: navbar}"></div>
 <h2>Edit Item</h2>
 <form th:action="@{'/items/edit/' + ${item.id}}" th:object="${item}" method="post" enctype="multipart/form-data">
-    <label>Name:
-        <input type="text" th:field="*{name}" required/>
-        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red;"></span>
-    </label><br>
 
-    <label>Manufacturer:
-        <input type="text" th:field="*{manufacturer}" required/>
-        <span th:if="${#fields.hasErrors('manufacturer')}" th:errors="*{manufacturer}" style="color:red;"></span>
-    </label><br>
+    <div th:if="${isManagerOrAdmin}">
+        <label>Name:
+            <input type="text" th:field="*{name}" required/>
+            <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red;"></span>
+        </label><br>
 
-    <label>Price:
-        <input type="number" step="0.01" th:field="*{price}" required/>
-        <span th:if="${#fields.hasErrors('price')}" th:errors="*{price}" style="color:red;"></span>
-    </label><br>
+        <label>Manufacturer:
+            <input type="text" th:field="*{manufacturer}" required/>
+            <span th:if="${#fields.hasErrors('manufacturer')}" th:errors="*{manufacturer}" style="color:red;"></span>
+        </label><br>
+
+        <label>Price:
+            <input type="number" step="0.01" th:field="*{price}" required/>
+            <span th:if="${#fields.hasErrors('price')}" th:errors="*{price}" style="color:red;"></span>
+        </label><br>
+
+        <label>Item Type:
+            <select name="itemType">
+                <option th:each="type : ${itemTypes}"
+                        th:value="${type.name()}"
+                        th:text="${type.toString()}"
+                        th:selected="${type.name() == item.itemType.name()}"></option>
+            </select>
+        </label><br>
+
+        <label>Image: <input type="file" name="imageFile"/></label><br>
+    </div>
 
     <label>Inventory:
         <input type="number" th:field="*{inventory}" required/>
         <span th:if="${#fields.hasErrors('inventory')}" th:errors="*{inventory}" style="color:red;"></span>
     </label><br>
-
-    <label>Item Type:
-        <select name="itemType">
-            <option th:each="type : ${itemTypes}"
-                    th:value="${type.name()}"
-                    th:text="${type.toString()}"
-                    th:selected="${type.name() == item.itemType.name()}"></option>
-        </select>
-    </label><br>
-
-    <label>Image: <input type="file" name="imageFile"/></label><br>
 
     <button type="submit">Modify Item</button>
 </form>

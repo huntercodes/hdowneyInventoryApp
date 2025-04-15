@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="~{fragments/header :: head}"></head>
 <body>
+
 <h2>Inventory List</h2>
+<div th:replace="~{fragments/header :: navbar}"></div>
 
 <form method="get" th:action="@{/items}">
     <input type="text" name="search" placeholder="Search by name or manufacturer" />

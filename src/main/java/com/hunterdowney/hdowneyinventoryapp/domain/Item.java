@@ -59,6 +59,7 @@ public class Item {
     public void setInventory(int inventory) { this.inventory = inventory; }
 
     public ItemType getItemType() { return itemType; }
+
     public void setItemType(String itemType) {
         try {
             this.itemType = ItemType.valueOf(itemType.replace(" & ", "_").toUpperCase());

@@ -16,7 +16,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register-user", "/css/**").permitAll()
+                        .requestMatchers("/", "/login", "/register-user", "/css/**").permitAll()
                         .requestMatchers("/items/delete/**", "/register").hasAnyRole("MNGR", "ADMIN")
                         .anyRequest().permitAll()
                 )
@@ -26,7 +26,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutSuccessUrl("/")
                         .permitAll()
                 );
 
