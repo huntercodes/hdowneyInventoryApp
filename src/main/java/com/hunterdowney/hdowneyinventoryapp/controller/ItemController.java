@@ -1,7 +1,11 @@
 package com.hunterdowney.hdowneyinventoryapp.controller;
 
+import com.hunterdowney.hdowneyinventoryapp.config.PageConfig;
 import com.hunterdowney.hdowneyinventoryapp.repository.ItemRepository;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
@@ -28,6 +32,9 @@ public class ItemController {
     public ItemController(ItemRepository itemRepo) {
         this.itemRepo = itemRepo;
     }
+
+    @Autowired
+    private PageConfig pageConfig;
 
     @PreAuthorize("hasAnyRole('MNGR', 'ADMIN')")
     @GetMapping("/register")
@@ -60,19 +67,25 @@ public class ItemController {
     @GetMapping("/items")
     public String listItems(@RequestParam(required = false) String search,
                             @RequestParam(required = false) ItemType filter,
+                            @RequestParam(defaultValue = "0") int page,
                             Model model) {
-        Iterable<Item> items;
+
+        Pageable pageable = PageRequest.of(page, pageConfig.getSize());
+        Page<Item> itemsPage;
+
         if (search != null && !search.isEmpty()) {
-            items = itemRepo.findByNameContainingIgnoreCaseOrManufacturerContainingIgnoreCase(search, search);
+            itemsPage = itemRepo.findByNameContainingIgnoreCaseOrManufacturerContainingIgnoreCase(search, search, pageable);
         } else if (filter != null) {
-            items = itemRepo.findByItemType(filter);
+            itemsPage = itemRepo.findByItemType(filter, pageable);
         } else {
-            items = itemRepo.findAll();
+            itemsPage = itemRepo.findAll(pageable);
         }
 
-        model.addAttribute("siteTitle", "Inventory List");
+        model.addAttribute("itemsPage", itemsPage);
         model.addAttribute("itemTypes", ItemType.values());
-        model.addAttribute("items", items);
+        model.addAttribute("search", search);
+        model.addAttribute("filter", filter);
+        model.addAttribute("siteTitle", "Inventory List");
         return "list";
     }
 
