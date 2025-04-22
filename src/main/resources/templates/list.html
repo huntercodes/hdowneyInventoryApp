@@ -6,17 +6,18 @@
 <div th:replace="~{fragments/header :: navbar}"></div>
 
 <form method="get" th:action="@{/items}">
-    <input type="text" name="search" placeholder="Search by name or manufacturer" />
+    <input type="text" name="search" placeholder="Search by name or manufacturer" th:value="${search}" />
     <select name="filter">
         <option value="">All Types</option>
         <option th:each="type : ${itemTypes}"
                 th:value="${type.name()}"
-                th:text="${type.toString()}"></option>
+                th:text="${type.toString()}"
+                th:selected="${filter == type.name()}"></option>
     </select>
     <button type="submit">Search</button>
 </form>
 
-<p>Total Items in Inventory: <span th:text="${items.size()}"></span></p>
+<p>Total Items in Inventory: <span th:text="${itemsPage.totalElements}"></span></p>
 
 <table border="1">
     <tr>
@@ -24,23 +25,42 @@
         <th>Manufacturer</th>
         <th>Price</th>
         <th>Type</th>
-        <th>Action</th>
+        <th>Actions</th>
     </tr>
-    <tr th:each="item : ${items}">
+    <tr th:each="item : ${itemsPage.content}">
         <td><a th:href="@{/items/{id}(id=${item.id})}" th:text="${item.name}"></a></td>
         <td th:text="${item.manufacturer}"></td>
         <td th:text="${item.price}"></td>
         <td th:text="${item.itemType}"></td>
-        <td><a th:href="@{/items/{id}(id=${item.id})}">View</a></td>
-        <td sec:authorize="hasAnyRole('ASSOC','MNGR','ADMIN')">
-            <a th:href="@{'/items/edit/' + ${item.id}}">Modify</a>
-        </td>
-
-        <td sec:authorize="hasAnyRole('MNGR','ADMIN')">
-            <a th:href="@{'/items/delete/' + ${item.id}}">Delete</a>
+        <td>
+            <a th:href="@{/items/{id}(id=${item.id})}">View</a>
+            <span sec:authorize="hasAnyRole('ASSOC','MNGR','ADMIN')">
+                | <a th:href="@{'/items/edit/' + ${item.id}}">Modify</a>
+            </span>
+            <span sec:authorize="hasAnyRole('MNGR','ADMIN')">
+                | <a th:href="@{'/items/delete/' + ${item.id}}">Delete</a>
+            </span>
         </td>
     </tr>
 </table>
+
+<div>
+    <span th:if="${itemsPage.hasPrevious()}">
+        <a th:href="@{/items(page=${itemsPage.number - 1}, search=${search}, filter=${filter})}">Prev</a>
+    </span>
+
+    <span th:each="i : ${#numbers.sequence(0, itemsPage.totalPages - 1)}">
+        <a th:href="@{/items(page=${i}, search=${search}, filter=${filter})}"
+           th:text="${i + 1}"
+           th:classappend="${itemsPage.number == i} ? ' current' : ''"></a>
+    </span>
+
+    <span th:if="${itemsPage.hasNext()}">
+        <a th:href="@{/items(page=${itemsPage.number + 1}, search=${search}, filter=${filter})}">Next</a>
+    </span>
+</div>
+
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>
+
