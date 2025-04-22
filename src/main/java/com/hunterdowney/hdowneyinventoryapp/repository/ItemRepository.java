@@ -13,4 +13,9 @@ import java.util.List;
 public interface ItemRepository extends JpaRepository<Item, String> {
     Page<Item> findByNameContainingIgnoreCaseOrManufacturerContainingIgnoreCase(String name, String manufacturer, Pageable pageable);
     Page<Item> findByItemType(ItemType itemType, Pageable pageable);
+
+    List<Item> findByNameContainingIgnoreCaseOrManufacturerContainingIgnoreCase(
+            String name, String manufacturer
+    );
+    List<Item> findByItemType(ItemType itemType);
 }
