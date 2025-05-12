@@ -6,6 +6,8 @@ import com.hunterdowney.hdowneyinventoryapp.domain.ItemType;
 import com.hunterdowney.hdowneyinventoryapp.repository.ItemRepository;
 import com.hunterdowney.hdowneyinventoryapp.security.TokenService;
 import com.hunterdowney.hdowneyinventoryapp.security.UserRole;
+import com.hunterdowney.hdowneyinventoryapp.messaging.InventoryProducer;
+import com.hunterdowney.hdowneyinventoryapp.config.ItemProperties;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +22,14 @@ public class ItemApiController {
 
     private final ItemRepository repo;
     private final TokenService tokenService;
+    private final InventoryProducer producer;
+    private final ItemProperties props;
 
-    public ItemApiController(ItemRepository repo, TokenService tokenService) {
+    public ItemApiController(ItemRepository repo, TokenService tokenService, InventoryProducer producer, ItemProperties props) {
         this.repo = repo;
         this.tokenService = tokenService;
+        this.producer = producer;
+        this.props = props;
     }
 
     @GetMapping
@@ -107,6 +113,9 @@ public class ItemApiController {
                     existing.setInventory(updates.getInventory());
                     existing.setItemType(updates.getItemType());
                     Item saved = repo.save(existing);
+                    if (saved.getInventory() <= props.getLowThreshold()) {
+                        producer.sendLowInventory(saved);
+                    }
                     return ResponseEntity.ok(toDto(saved, tokenService.roleFor(auth)));
                 })
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
@@ -142,6 +151,9 @@ public class ItemApiController {
                         item.setItemType((String)changes.get("itemType"));
                     }
                     Item saved = repo.save(item);
+                    if (saved.getInventory() <= props.getLowThreshold()) {
+                        producer.sendLowInventory(saved);
+                    }
                     return ResponseEntity.ok(toDto(saved, tokenService.roleFor(auth)));
                 })
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());

@@ -1,6 +1,8 @@
 package com.hunterdowney.hdowneyinventoryapp.controller;
 
+import com.hunterdowney.hdowneyinventoryapp.config.ItemProperties;
 import com.hunterdowney.hdowneyinventoryapp.config.PageConfig;
+import com.hunterdowney.hdowneyinventoryapp.messaging.InventoryProducer;
 import com.hunterdowney.hdowneyinventoryapp.repository.ItemRepository;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -27,14 +29,18 @@ import java.util.Optional;
 public class ItemController {
 
     private final ItemRepository itemRepo;
-
-    @Autowired
-    public ItemController(ItemRepository itemRepo) {
-        this.itemRepo = itemRepo;
-    }
-
-    @Autowired
+    private final InventoryProducer producer;
+    private final ItemProperties props;
     private PageConfig pageConfig;
+
+
+    @Autowired
+    public ItemController(ItemRepository itemRepo, PageConfig pageConfig, InventoryProducer producer, ItemProperties props) {
+        this.itemRepo = itemRepo;
+        this.pageConfig = pageConfig;
+        this.producer = producer;
+        this.props = props;
+    }
 
     @PreAuthorize("hasAnyRole('MNGR', 'ADMIN')")
     @GetMapping("/register")
@@ -122,7 +128,7 @@ public class ItemController {
     @PostMapping("/items/edit/{id}")
     @PreAuthorize("hasAnyRole('ASSOC', 'MNGR', 'ADMIN')")
     public String updateItem(@PathVariable String id,
-                             @ModelAttribute Item item,  // <== removed @Valid
+                             @ModelAttribute Item item,
                              BindingResult result,
                              @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
 
@@ -158,7 +164,12 @@ public class ItemController {
 
         existing.setInventory(item.getInventory());
 
-        itemRepo.save(existing);
+        Item updated = itemRepo.save(existing);
+
+        if (updated.getInventory() <= props.getLowThreshold()) {
+            producer.sendLowInventory(updated);
+        }
+
         return "redirect:/items";
     }
 
